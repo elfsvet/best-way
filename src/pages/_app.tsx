@@ -5,7 +5,10 @@ import { ClerkProvider } from "@clerk/clerk-react";
 
 const MyApp: AppType = ({ Component, pageProps }) => {
   return (
-    <ClerkProvider {...pageProps}>
+    <ClerkProvider
+      {...pageProps}
+      publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
+    >
       <Component {...pageProps} />
     </ClerkProvider>
   );
