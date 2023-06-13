@@ -6,7 +6,7 @@ import { ClerkProvider } from "@clerk/clerk-react";
 const MyApp: AppType = ({ Component, pageProps }) => {
   return (
     <ClerkProvider {...pageProps}>
-      <Component {...pageProps} />;
+      <Component {...pageProps} />
     </ClerkProvider>
   );
 };
