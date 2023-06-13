@@ -5,6 +5,7 @@ import { ClerkProvider } from "@clerk/clerk-react";
 
 const MyApp: AppType = ({ Component, pageProps }) => {
   return (
+    //@ts-expect-error Depreceted value and missing publishableKey
     <ClerkProvider
       {...pageProps}
       publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
