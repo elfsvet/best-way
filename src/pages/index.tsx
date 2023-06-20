@@ -6,6 +6,7 @@ import { api } from "~/utils/api";
 import type { RouterOutputs } from "~/utils/api";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
+import LoadingSpinner, { LoadingPage } from "~/components/loading";
 
 dayjs.extend(relativeTime);
 
@@ -53,20 +54,35 @@ const PostView = (props: PostWithUser) => {
             post.createdAt
           ).fromNow()}`}</span>
         </div>
-        <span className="">{post.content}</span>
+        <span className="text-2xl">{post.content}</span>
       </div>
     </div>
   );
 };
 
+const Feed = () => {
+  const { data, isLoading: postsLoading } = api.posts.getAll.useQuery();
+
+  if (postsLoading) return <LoadingPage />;
+  if (!data) return <div className="">No Data</div>;
+
+  return (
+    <div className="flex flex-col">
+      {[...data, ...data].map((fullPost) => (
+        <PostView {...fullPost} key={fullPost.post.id} />
+      ))}
+    </div>
+  );
+};
+
 const Home: NextPage = () => {
-  const user = useUser();
+  const { isLoaded: userLoading, isSignedIn: userIsSignedIn } = useUser();
 
-  const { data, isLoading, isError } = api.posts.getAll.useQuery();
+  // Start fetching asap
+  api.posts.getAll.useQuery();
 
-  if (!data) return <div>Loading...</div>;
-  if (!data || isLoading) return <div>No data.</div>;
-  if (isError) return <div>Oops. Did I do it again? The error occurred.</div>;
+  if (!userLoading) return <div />;
+
   return (
     <>
       <Head>
@@ -78,17 +94,13 @@ const Home: NextPage = () => {
         <div className="w-full border-x border-slate-400 md:max-w-2xl">
           <div className="border-b border-slate-400 p-4">
             <div className="flex justify-center">
-              {!user.isSignedIn ? <SignInButton /> : <CreatePostWizard />}
+              {!userIsSignedIn ? <SignInButton /> : <CreatePostWizard />}
             </div>
             <div className="flex justify-center">
               <UserButton afterSignOutUrl="/" />
             </div>
           </div>
-          <div className="flex flex-col">
-            {[...data, ...data].map((fullPost) => (
-              <PostView {...fullPost} key={fullPost.post.id} />
-            ))}
-          </div>
+          <Feed />
         </div>
       </main>
     </>
